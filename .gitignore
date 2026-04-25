@@ -148,3 +148,4 @@ dist
 # OS
 .DS_Store
 Thumbs.db
+exercises/gantry-pick-and-place/backend/proto

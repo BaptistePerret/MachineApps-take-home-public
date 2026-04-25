@@ -43,10 +43,10 @@ This document is the working plan and implementation tracker for the `gantry-pic
 ## Implementation plan
 ### 1. Backend setup
 Tasks:
-- [ ] Create application entry point in `exercises/gantry-pick-and-place/backend` (e.g. `app.py` or `main.py`).
-- [ ] Add module structure for API, state machine, and shared models.
-- [ ] Confirm `requirements.txt` includes `fastapi`, `uvicorn`, `vention-state-machine`, and `vention-storage`.
-- [ ] Add a `start` command or dev instruction for `uvicorn`.
+- [x] Create application entry point in `exercises/gantry-pick-and-place/backend` (e.g. `app.py` or `main.py`).
+- [x] Add module structure for API, state machine, and shared models.
+- [x] Confirm `requirements.txt` includes `fastapi`, `uvicorn`, `vention-state-machine`, and `vention-storage`.
+- [x] Add a `start` command or dev instruction for `uvicorn`.
 
 Notes:
 - `robot_sim.py` does not currently import `vention-communication`, but the backend can wrap the simulator and expose REST endpoints.
@@ -161,7 +161,7 @@ Optional bonus tasks:
 ## Details for future implementation chats
 When starting a new chat, include:
 - Current repo path: `exercises/gantry-pick-and-place`
-- Existing backend files: `backend/robot_sim.py`, `backend/requirements.txt`
+- Existing backend files in the following folder : `backend/`
 - No frontend currently exists under this exercise.
 - Use this plan file as the canonical source for required features and task sequencing.
 - Highlight that the backend must poll `robot.move_to(...)` repeatedly until motion completes in each state.
@@ -175,8 +175,8 @@ Use these tags/phrases to keep context consistent:
 ---
 
 ## Status tracker
-- [ ] Backend app entry point created
-- [ ] State machine module created
+- [x] Backend app entry point created
+- [x] State machine module created
 - [ ] API schema models created
 - [ ] REST endpoints created
 - [ ] Pick-and-place sequence implemented
