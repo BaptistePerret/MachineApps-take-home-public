@@ -54,7 +54,7 @@ Notes:
 
 ### 2. Backend state and flow
 Tasks:
-- [ ] Define a shared runtime model with:
+- [x] Define a shared runtime model with:
   - `robot_position`
   - `home_position`
   - `cube_start_position`
