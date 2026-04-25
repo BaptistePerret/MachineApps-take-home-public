@@ -187,17 +187,17 @@ class PickAndPlaceMachine(StateMachine):
         super().__init__(states=States, transitions=TRANSITIONS)
         self.robot = robot
     
-    @on_enter_state(States.running.move_to_cube)
+    @on_enter_state(States.running.moveToCube)
     def enter_move_to_cube(self, _):
         # Start moving to cube position
-        self.robot.move_to(self.cube_position)
+        self.robot.move_to(self.cubPosition)
     
-    @on_enter_state(States.running.lower_to_pick)
+    @on_enter_state(States.running.lowerToPick)
     def enter_lower_to_pick(self, _):
         # Lower Z axis to pick the cube
         self.robot.move_to([self.robot.x, self.robot.y, pick_z])
     
-    @on_enter_state(States.running.close_gripper)
+    @on_enter_state(States.running.closeGripper)
     def enter_close_gripper(self, _):
         # Close the gripper
         self.robot.closed_gripper()

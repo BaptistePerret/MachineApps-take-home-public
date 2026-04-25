@@ -62,8 +62,8 @@ Tasks:
   - `gripper_state`
   - `state_machine_state`
   - `is_moving` flag
-- [ ] Create a wrapper around `Robot` from `robot_sim.py`.
-- [ ] Create a state machine with the following states:
+- [x] Create a wrapper around `Robot` from `robot_sim.py`.
+- [x] Create a state machine with the following states:
   - `idle`
   - `home`
   - `move_to_cube`
@@ -75,8 +75,8 @@ Tasks:
   - `open_gripper`
   - `lift_from_place`
   - `complete`
-- [ ] Implement callbacks for each state.
-- [ ] For motion states, call `robot.move_to(target_position, speed)` repeatedly until `axis_speed == [0,0,0]` or the motion completes.
+- [x] Implement callbacks for each state.
+- [x] For motion states, call `robot.move_to(target_position, speed)` repeatedly until `axis_speed == [0,0,0]` or the motion completes.
 
 Design notes:
 - Use a single state machine instance in memory.
@@ -85,15 +85,13 @@ Design notes:
 
 ### 3. Backend API endpoints
 Tasks:
-- [ ] `GET /api/status` — returns robot position, cube position, destination, gripper state, current state, moving status, and any error.
-- [ ] `POST /api/robot/home` — triggers homing.
-- [ ] `POST /api/robot/start` — triggers the pick-and-place sequence.
-- [ ] `GET /api/robot` — get current robot position and status.
-- [ ] `POST /api/robot` — set robot position or home position if needed.
-- [ ] `GET /api/config/cube` — get cube start coordinates.
-- [ ] `POST /api/config/cube` — set cube start coordinates.
-- [ ] `GET /api/config/destination` — get destination coordinates.
-- [ ] `POST /api/config/destination` — set destination coordinates.
+- [x] `GET /api/status` — returns robot position, cube position, destination, gripper state, current state, moving status, and any error.
+- [x] `POST /api/robot/home` — triggers homing.
+- [x] `POST /api/robot/start` — triggers the pick-and-place sequence.
+- [x] `GET /api/config/cube` — get cube start coordinates.
+- [x] `POST /api/config/cube` — set cube start coordinates.
+- [x] `GET /api/config/destination` — get destination coordinates.
+- [x] `POST /api/config/destination` — set destination coordinates.
 
 Design notes:
 - Use Pydantic models for all request/response bodies.
@@ -177,8 +175,8 @@ Use these tags/phrases to keep context consistent:
 ## Status tracker
 - [x] Backend app entry point created
 - [x] State machine module created
-- [ ] API schema models created
-- [ ] REST endpoints created
+- [x] API schema models created
+- [x] REST endpoints created (RPC actions via vention-communication)
 - [ ] Pick-and-place sequence implemented
 - [ ] React frontend created
 - [ ] Telemetry dashboard implemented

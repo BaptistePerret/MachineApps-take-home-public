@@ -28,7 +28,7 @@ class RuntimeModel(BaseModel):
     cube_start_position: Position = Position()
     destination_position: Position = Position()
     gripper_state: GripperState = GripperState.OPEN
-    state_machine_state: str = "idle"
+    state_machine_state: str = "ready"
     is_moving: bool = False
     error: Optional[str] = None
 
