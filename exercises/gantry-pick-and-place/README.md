@@ -1,5 +1,66 @@
 # **Robot Pick & Place Simulation**
 
+## **Baptiste's README**
+
+### **Requirements**
+- Ubuntu on Linux / WSL
+- Python 3.10 virtual environment
+
+#### **Python virtual environment setup**
+
+Run the following bash commands to **install Python 3.10** :
+```bash
+sudo apt install -y software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt update
+sudo apt install python3.10 -y
+sudo apt install python3.10-venv python3.10-distutils -y
+```
+Run the following bash commands to **create the virtual environment** :
+```bash
+cd backend
+python3.10 -m venv venv
+source venv/bin/activate
+```
+Run the following bash command to **enter/activate the virtual environment** :
+```bash
+source venv/bin/activate
+```
+Run the following bash command to **install the python packages** required in the virtual environment only :
+```bash
+pip install -r requirements.txt
+```
+
+#### **NodeJS, NPM setup**
+Run the following bash commands to **install NodeJS 22 and NPM** :
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+source ~/.bashrc
+nvm install 22
+nvm use 22
+nvm alias default 22
+```
+
+### **Getting Started**
+
+Run the following bash commands to **launch the backend** :
+```bash
+cd backend
+chmod +x run.sh
+./run.sh
+```
+
+### **Misc**
+- Found an issue in the Vention's [`vention-state-machine`](https://pypi.org/project/vention-state-machine/) library documentation : 
+
+  - `Triggers.<trigger_name>.value` has been replace with `Triggers.<trigger_name>.name` or `Triggers.<trigger_name>()` and must be used accordingly.
+
+
+-----
+-----
+-----
+
+
 ## **Problem Statement**
 
 You are tasked with building a proof-of-concept for a 3-axis gantry robot solution. The goal is to implement a Python backend that controls a robotic arm using a State Machine and a React frontend to visualize and configure the operation.
