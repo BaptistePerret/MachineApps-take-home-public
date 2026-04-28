@@ -14,12 +14,13 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  // Initialize form values only once on component mount
   useEffect(() => {
     if (status) {
       setCubePosition(status.cube_start_position);
       setDestPosition(status.destination_position);
     }
-  }, [status]);
+  }, []); // Empty dependency array - only run once on mount
 
   const handleCubePositionChange = (axis: keyof Position, value: string) => {
     setCubePosition(prev => ({
