@@ -84,8 +84,8 @@ class GantryStateMachine(StateMachine):
     def _current_robot_position(self) -> Position:
         return runtime_state.get_state().robot_position
 
-    def _move_to(self, target: Position, speed: int = 90) -> Optional[str]:
-        _, _, error = self.controller.poll_move_to(target, speed=speed)
+    async def _move_to(self, target: Position, speed: int = 90) -> Optional[str]:
+        _, _, error = await self.controller.poll_move_to(target, speed=speed)
         return error
 
     @on_state_change
@@ -93,10 +93,10 @@ class GantryStateMachine(StateMachine):
         self._update_state(state_name=new_state, is_moving=False)
 
     @on_enter_state(States.running.home)
-    def enter_home(self, _):
+    async def enter_home(self, _):
         print("Entering home state, moving robot to home position")
         self._update_state(state_name="Running_home", is_moving=True)
-        error = self.controller.home()
+        error = await self.controller.home()
         if error and error[2]:
             self._update_state(state_name="Running_home", is_moving=False, error=error[2])
             return
@@ -108,12 +108,12 @@ class GantryStateMachine(StateMachine):
         # self.trigger(Triggers.to_move_to_cube.name)
 
     @on_enter_state(States.running.moveToCube)
-    def enter_move_to_cube(self, _):
+    async def enter_move_to_cube(self, _):
         print("Entering moveToCube state, moving robot above cube start position")
         self._update_state(state_name="moveToCube", is_moving=True)
         cube_pos = self._current_cube_position()
         target = Position(x=cube_pos.x, y=cube_pos.y, z=SAFE_TRAVEL_Z)
-        error = self._move_to(target)
+        error = await self._move_to(target)
         if error:
             self._update_state(state_name="moveToCube", is_moving=False, error=error)
             return
@@ -125,13 +125,13 @@ class GantryStateMachine(StateMachine):
         self.trigger(Triggers.to_lower_to_pick.name)
 
     @on_enter_state(States.running.lowerToPick)
-    def enter_lower_to_pick(self, _):
+    async def enter_lower_to_pick(self, _):
         print("Entering lowerToPick state, lowering robot to cube to pick")
         self._update_state(state_name="lowerToPick", is_moving=True)
         cube_pos = self._current_cube_position()
         current = self._current_robot_position()
         target = Position(x=current.x, y=current.y, z=cube_pos.z)
-        error = self._move_to(target)
+        error = await self._move_to(target)
         if error:
             self._update_state(state_name="lowerToPick", is_moving=False, error=error)
             return
@@ -155,12 +155,12 @@ class GantryStateMachine(StateMachine):
         self.trigger(Triggers.to_lift_cube.name)
 
     @on_enter_state(States.running.liftCube)
-    def enter_lift_cube(self, _):
+    async def enter_lift_cube(self, _):
         print("Entering liftCube state, lifting cube up to safe travel height")
         self._update_state(state_name="liftCube", is_moving=True)
         current = self._current_robot_position()
         target = Position(x=current.x, y=current.y, z=SAFE_TRAVEL_Z)
-        error = self._move_to(target)
+        error = await self._move_to(target)
         if error:
             self._update_state(state_name="liftCube", is_moving=False, error=error)
             return
@@ -172,12 +172,12 @@ class GantryStateMachine(StateMachine):
         self.trigger(Triggers.to_move_to_dest.name)
 
     @on_enter_state(States.running.moveToDest)
-    def enter_move_to_dest(self, _):
+    async def enter_move_to_dest(self, _):
         print("Entering moveToDest state, moving robot to destination position")
         self._update_state(state_name="moveToDest", is_moving=True)
         dest = self._current_destination_position()
         target = Position(x=dest.x, y=dest.y, z=SAFE_TRAVEL_Z)
-        error = self._move_to(target)
+        error = await self._move_to(target)
         if error:
             self._update_state(state_name="moveToDest", is_moving=False, error=error)
             return
@@ -189,13 +189,13 @@ class GantryStateMachine(StateMachine):
         self.trigger(Triggers.to_lower_to_place.name)
 
     @on_enter_state(States.running.lowerToPlace)
-    def enter_lower_to_place(self, _):
+    async def enter_lower_to_place(self, _):
         print("Entering lowerToPlace state, lowering robot to destination position")
         self._update_state(state_name="lowerToPlace", is_moving=True)
         dest = self._current_destination_position()
         current = self._current_robot_position()
         target = Position(x=dest.x, y=dest.y, z=dest.z)
-        error = self._move_to(target)
+        error = await self._move_to(target)
         if error:
             self._update_state(state_name="lowerToPlace", is_moving=False, error=error)
             return
@@ -219,12 +219,12 @@ class GantryStateMachine(StateMachine):
         self.trigger(Triggers.to_lift_from_place.name)
 
     @on_enter_state(States.running.liftFromPlace)
-    def enter_lift_from_place(self, _):
+    async def enter_lift_from_place(self, _):
         print("Entering liftFromPlace state, lifting cube from destination position")
         self._update_state(state_name="liftFromPlace", is_moving=True)
         dest = self._current_destination_position()
         target = Position(x=dest.x, y=dest.y, z=SAFE_TRAVEL_Z)
-        error = self._move_to(target)
+        error = await self._move_to(target)
         if error:
             self._update_state(state_name="liftFromPlace", is_moving=False, error=error)
             return
