@@ -7,6 +7,7 @@ Run with: uvicorn app:app --reload
 """
 
 # from fastapi import FastAPI
+import asyncio
 from typing import Optional
 from communication.app import VentionApp
 from communication.decorators import action, stream
@@ -60,25 +61,27 @@ async def get_status() -> StatusResponse:
 @action()
 async def home_robot() -> StatusResponse:
     """Trigger the home operation."""
-    my_state_machine.trigger(Triggers.start.value)
+    print("Triggering home operation")
+    my_state_machine.trigger(Triggers.to_home.name)
     return _runtime_to_status()
 
 
 @action()
 async def start_sequence() -> StatusResponse:
-    """Start the pick-and-place sequence. Must be in ready state."""
-    if my_state_machine.state.name != "ready":
+    """Start the pick-and-place sequence. Must be in home state."""
+    print("Starting pick-and-place sequence")
+    if runtime_state.get_state().state_machine_state != "Running_home":
         return StatusResponse(
             robot_position=runtime_state.get_state().robot_position,
             home_position=runtime_state.get_state().home_position,
             cube_start_position=runtime_state.get_state().cube_start_position,
             destination_position=runtime_state.get_state().destination_position,
             gripper_state=runtime_state.get_state().gripper_state.value,
-            state_machine_state=my_state_machine.state.name,
+            state_machine_state=runtime_state.get_state().state_machine_state,
             is_moving=runtime_state.get_state().is_moving,
-            error="Sequence can only start from ready state",
+            error="Sequence can only start from home state",
         )
-    my_state_machine.trigger(Triggers.start.value)
+    my_state_machine.trigger(Triggers.to_move_to_cube.name)
     return _runtime_to_status()
 
 
@@ -117,7 +120,10 @@ async def status_stream() -> StatusResponse:
     """Stream live status updates."""
     return _runtime_to_status()
 
-
+async def loop():
+    while True:
+        asyncio.create_task(status_stream())
+        await asyncio.sleep(1)
 # ============================================================================
 # Startup / Shutdown
 # ============================================================================
@@ -127,6 +133,7 @@ async def startup():
     """Initialize the state machine on app startup."""
     my_state_machine.start()
     print("State machine started, ready to accept commands.")
+    asyncio.create_task(loop())
 
 
 # Finalize the app to register routes and emit proto

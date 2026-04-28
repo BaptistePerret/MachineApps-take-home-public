@@ -45,12 +45,13 @@ class RobotController:
         return GripperState.OPEN if value == SimGripperState.OPEN else GripperState.CLOSED
 
     def _sync_runtime(self, error: Optional[str] = None) -> None:
+        robot_pos = Position(
+            x=self._robot.current_position[0],
+            y=self._robot.current_position[1],
+            z=self._robot.current_position[2],
+        )
         runtime_state.update(
-            robot_position=Position(
-                x=self._robot.current_position[0],
-                y=self._robot.current_position[1],
-                z=self._robot.current_position[2],
-            ),
+            robot_position=robot_pos,
             home_position=Position(
                 x=self._robot.home_position[0],
                 y=self._robot.home_position[1],
@@ -60,6 +61,7 @@ class RobotController:
             is_moving=any(abs(v) > 0 for v in self._robot.axis_speed),
             error=error,
         )
+        print(f"Robot position: x={robot_pos.x:.2f}, y={robot_pos.y:.2f}, z={robot_pos.z:.2f}")
 
     def get_runtime_state(self):
         return runtime_state.get_state()

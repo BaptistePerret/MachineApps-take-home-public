@@ -51,10 +51,83 @@ async def robot_status_stream():
 - Enables SDK generation for TypeScript, Python, Go via Buf
 - Results in **auto-completed frontend methods** with strong typing
 
-#### 4. **Connect-Compatible Transport**
+#### 4. **Connect-RPC Transport**
+- Uses **Connect-RPC** (formerly Connect) for TypeScript clients
 - Works with `@connectrpc/connect-web` (TypeScript/React)
-- Works with `connectrpc-python` (Python clients)
 - All methods mounted under `/rpc/<service>/<method>` routes
+- **NOT REST endpoints** - uses gRPC-Web protocol
+
+### TypeScript Client Usage
+
+Based on the generated `.proto` file, the TypeScript client uses **Connect-RPC**:
+
+```typescript
+import { createPromiseClient } from "@connectrpc/connect";
+import { createConnectTransport } from "@connectrpc/connect-web";
+import { GantryPickAndPlaceService } from "./gen/proto/app_connect.js";
+
+// Create transport
+const transport = createConnectTransport({
+  baseUrl: "http://localhost:8000", // Backend URL
+});
+
+// Create client
+const client = createPromiseClient(GantryPickAndPlaceService, transport);
+
+// Use unary RPC methods (request-response)
+const status = await client.getStatus({});
+const response = await client.homeRobot({});
+const cubePos = await client.getCubePosition({});
+
+// Use streaming RPC method
+const stream = client.status({}); // Returns AsyncIterable
+for await (const update of stream) {
+  console.log("Live status update:", update);
+}
+```
+
+### Frontend Setup
+
+1. **Install dependencies:**
+```bash
+npm install @bufbuild/protobuf @connectrpc/connect @connectrpc/connect-web
+npm install --save-dev @bufbuild/buf @bufbuild/protoc-gen-es
+```
+
+2. **Copy proto file** from backend to `frontend/proto/`
+
+3. **Create buf.gen.yaml:**
+```yaml
+version: v1
+plugins:
+  - plugin: buf.build/protocolbuffers/js
+    out: src/gen
+    opt: import_style=commonjs,binary
+  - plugin: buf.build/connectrpc/es
+    out: src/gen
+    opt: target=ts
+```
+
+4. **Generate client code:**
+```bash
+npm run gen  # Runs buf generate
+```
+
+5. **Use in React:**
+```typescript
+// Create API client
+const client = createPromiseClient(GantryPickAndPlaceService, transport);
+
+// Subscribe to live updates
+useEffect(() => {
+  const subscribe = async () => {
+    for await (const status of client.status({})) {
+      setStatus(status);
+    }
+  };
+  subscribe();
+}, []);
+```
 
 ### Installation
 ```bash

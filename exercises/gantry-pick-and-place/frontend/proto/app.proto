@@ -1,0 +1,33 @@
+syntax = "proto3";
+package vention.app.v1;
+
+import "google/protobuf/empty.proto";
+
+
+message Position {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}
+
+message StatusResponse {
+  Position robot_position = 1;
+  Position home_position = 2;
+  Position cube_start_position = 3;
+  Position destination_position = 4;
+  string gripper_state = 5;
+  string state_machine_state = 6;
+  bool is_moving = 7;
+  string error = 8;
+}
+
+service GantryPickAndPlaceService {
+  rpc get_status (google.protobuf.Empty) returns (StatusResponse);
+  rpc home_robot (google.protobuf.Empty) returns (StatusResponse);
+  rpc start_sequence (google.protobuf.Empty) returns (StatusResponse);
+  rpc set_cube_position (Position) returns (StatusResponse);
+  rpc set_destination_position (Position) returns (StatusResponse);
+  rpc get_cube_position (google.protobuf.Empty) returns (Position);
+  rpc get_destination_position (google.protobuf.Empty) returns (Position);
+  rpc status (google.protobuf.Empty) returns (stream StatusResponse);
+}

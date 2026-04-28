@@ -95,17 +95,17 @@ class GantryStateMachine(StateMachine):
     @on_enter_state(States.running.home)
     def enter_home(self, _):
         print("Entering home state, moving robot to home position")
-        self._update_state(state_name="home", is_moving=True)
+        self._update_state(state_name="Running_home", is_moving=True)
         error = self.controller.home()
         if error and error[2]:
-            self._update_state(state_name="home", is_moving=False, error=error[2])
+            self._update_state(state_name="Running_home", is_moving=False, error=error[2])
             return
         print("Robot homed successfully")
 
         # TODO: This is a bit of a hack to automatically transition to the next state after transition completes.
         # TODO: call this trigger externally from the API after transition is complete instead of automatically transitioning here.
-        print("Transitioning to moveToCube")
-        self.trigger(Triggers.to_move_to_cube.name)
+        # print("Transitioning to moveToCube")
+        # self.trigger(Triggers.to_move_to_cube.name)
 
     @on_enter_state(States.running.moveToCube)
     def enter_move_to_cube(self, _):

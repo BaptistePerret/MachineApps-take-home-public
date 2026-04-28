@@ -122,17 +122,17 @@ Design notes:
 
 ### 5. Frontend structure and dashboard
 Tasks:
-- [ ] Create `exercises/gantry-pick-and-place/frontend` with React + TypeScript app.
-- [ ] Add UI components:
+- [x] Create `exercises/gantry-pick-and-place/frontend` with React + TypeScript app.
+- [x] Add UI components:
   - `RobotTelemetryCard`
   - `PositionConfigurationForm`
   - `CommandButtons`
   - `StateDisplay`
   - `ErrorBanner`
-- [ ] Implement polling or polling interval to refresh `/api/status` every 500–1000 ms.
-- [ ] Implement commands for `Home` and `Start Sequence`.
-- [ ] Implement coordinate forms for cube start and destination.
-- [ ] Add operational/error visuals: success, warning, busy, error.
+- [x] Implement polling or polling interval to refresh `/api/status` every 500–1000 ms.
+- [x] Implement commands for `Home` and `Start Sequence`.
+- [x] Implement coordinate forms for cube start and destination.
+- [x] Add operational/error visuals: success, warning, busy, error.
 
 Design notes:
 - A simple polling model is acceptable; websockets are optional.
@@ -177,10 +177,11 @@ Use these tags/phrases to keep context consistent:
 - [x] State machine module created
 - [x] API schema models created
 - [x] REST endpoints created (RPC actions via vention-communication)
-- [ ] Pick-and-place sequence implemented
-- [ ] React frontend created
-- [ ] Telemetry dashboard implemented
-- [ ] Controls implemented
+- [x] Pick-and-place sequence implemented
+- [x] React frontend created
+- [x] Telemetry dashboard implemented
+- [x] Controls implemented
+- [x] Connect-RPC integration implemented
 - [ ] Manual end-to-end validation completed
 - [ ] Optional persistence / storage added
 - [ ] Optional tests added
