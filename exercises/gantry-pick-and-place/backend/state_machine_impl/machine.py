@@ -110,12 +110,12 @@ class GantryStateMachine(StateMachine):
     @on_enter_state(States.running.moveToCube)
     def enter_move_to_cube(self, _):
         print("Entering moveToCube state, moving robot above cube start position")
-        self._update_state(state_name="moveToCube", is_moving=True)
+        self._update_state(state_name="Running_moveToCube", is_moving=True)
         cube_pos = self._current_cube_position()
         target = Position(x=cube_pos.x, y=cube_pos.y, z=SAFE_TRAVEL_Z)
         error = self._move_to(target)
         if error:
-            self._update_state(state_name="moveToCube", is_moving=False, error=error)
+            self._update_state(state_name="Running_moveToCube", is_moving=False, error=error)
             return
         print("Robot moved above cube successfully")
         
@@ -127,13 +127,13 @@ class GantryStateMachine(StateMachine):
     @on_enter_state(States.running.lowerToPick)
     def enter_lower_to_pick(self, _):
         print("Entering lowerToPick state, lowering robot to cube to pick")
-        self._update_state(state_name="lowerToPick", is_moving=True)
+        self._update_state(state_name="Running_lowerToPick", is_moving=True)
         cube_pos = self._current_cube_position()
         current = self._current_robot_position()
         target = Position(x=current.x, y=current.y, z=cube_pos.z)
         error = self._move_to(target)
         if error:
-            self._update_state(state_name="lowerToPick", is_moving=False, error=error)
+            self._update_state(state_name="Running_lowerToPick", is_moving=False, error=error)
             return
         print("Robot lowered to cube successfully")
         
@@ -145,7 +145,7 @@ class GantryStateMachine(StateMachine):
     @on_enter_state(States.running.closeGripper)
     def enter_close_gripper(self, _):
         print("Entering closeGripper state, closing gripper to pick cube")
-        self._update_state(state_name="closeGripper", is_moving=False)
+        self._update_state(state_name="Running_closeGripper", is_moving=False)
         self.controller.close_gripper()
         print("Gripper closed successfully")
         
@@ -157,12 +157,12 @@ class GantryStateMachine(StateMachine):
     @on_enter_state(States.running.liftCube)
     def enter_lift_cube(self, _):
         print("Entering liftCube state, lifting cube up to safe travel height")
-        self._update_state(state_name="liftCube", is_moving=True)
+        self._update_state(state_name="Running_liftCube", is_moving=True)
         current = self._current_robot_position()
         target = Position(x=current.x, y=current.y, z=SAFE_TRAVEL_Z)
         error = self._move_to(target)
         if error:
-            self._update_state(state_name="liftCube", is_moving=False, error=error)
+            self._update_state(state_name="Running_liftCube", is_moving=False, error=error)
             return
         print("Cube lifted successfully")
         
@@ -174,12 +174,12 @@ class GantryStateMachine(StateMachine):
     @on_enter_state(States.running.moveToDest)
     def enter_move_to_dest(self, _):
         print("Entering moveToDest state, moving robot to destination position")
-        self._update_state(state_name="moveToDest", is_moving=True)
+        self._update_state(state_name="Running_moveToDest", is_moving=True)
         dest = self._current_destination_position()
         target = Position(x=dest.x, y=dest.y, z=SAFE_TRAVEL_Z)
         error = self._move_to(target)
         if error:
-            self._update_state(state_name="moveToDest", is_moving=False, error=error)
+            self._update_state(state_name="Running_moveToDest", is_moving=False, error=error)
             return
         print("Robot moved to destination successfully")
         
@@ -191,13 +191,13 @@ class GantryStateMachine(StateMachine):
     @on_enter_state(States.running.lowerToPlace)
     def enter_lower_to_place(self, _):
         print("Entering lowerToPlace state, lowering robot to destination position")
-        self._update_state(state_name="lowerToPlace", is_moving=True)
+        self._update_state(state_name="Running_lowerToPlace", is_moving=True)
         dest = self._current_destination_position()
         current = self._current_robot_position()
         target = Position(x=dest.x, y=dest.y, z=dest.z)
         error = self._move_to(target)
         if error:
-            self._update_state(state_name="lowerToPlace", is_moving=False, error=error)
+            self._update_state(state_name="Running_lowerToPlace", is_moving=False, error=error)
             return
         print("Robot lowered to destination successfully")
         
@@ -209,7 +209,7 @@ class GantryStateMachine(StateMachine):
     @on_enter_state(States.running.openGripper)
     def enter_open_gripper(self, _):
         print("Entering openGripper state, opening gripper to place cube")
-        self._update_state(state_name="openGripper", is_moving=False)
+        self._update_state(state_name="Running_openGripper", is_moving=False)
         self.controller.open_gripper()
         print("Gripper opened successfully")
         
@@ -221,12 +221,12 @@ class GantryStateMachine(StateMachine):
     @on_enter_state(States.running.liftFromPlace)
     def enter_lift_from_place(self, _):
         print("Entering liftFromPlace state, lifting cube from destination position")
-        self._update_state(state_name="liftFromPlace", is_moving=True)
+        self._update_state(state_name="Running_liftFromPlace", is_moving=True)
         dest = self._current_destination_position()
         target = Position(x=dest.x, y=dest.y, z=SAFE_TRAVEL_Z)
         error = self._move_to(target)
         if error:
-            self._update_state(state_name="liftFromPlace", is_moving=False, error=error)
+            self._update_state(state_name="Running_liftFromPlace", is_moving=False, error=error)
             return
         print("Cube lifted from destination successfully")
         
@@ -238,7 +238,7 @@ class GantryStateMachine(StateMachine):
     @on_enter_state(States.running.complete)
     def enter_complete(self, _):
         print("Entering complete state, sequence complete")
-        self._update_state(state_name="complete", is_moving=False)
+        self._update_state(state_name="Running_complete", is_moving=False)
 
 
 my_state_machine = GantryStateMachine()
