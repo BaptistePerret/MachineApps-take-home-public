@@ -50,6 +50,18 @@ chmod +x run.sh
 ./run.sh
 ```
 
+### **Docker Compose**
+
+Run the whole stack with Docker Compose from the exercise root:
+```bash
+cd ..
+cd gantry-pick-and-place
+docker compose build
+docker compose up
+```
+
+The backend will be available on `http://localhost:8000` and the frontend on `http://localhost:3000`.
+
 ### **Misc**
 - Found an issue in the Vention's [`vention-state-machine`](https://pypi.org/project/vention-state-machine/) library documentation : 
 
