@@ -3,7 +3,7 @@ Pick-and-place state machine implementation for the Gantry backend.
 
 This state machine is implemented using the vention-state-machine package.
 """
-
+import asyncio
 from typing import Optional
 
 from state_machine.core import StateMachine
@@ -84,9 +84,21 @@ class GantryStateMachine(StateMachine):
     def _current_robot_position(self) -> Position:
         return runtime_state.get_state().robot_position
 
-    def _move_to(self, target: Position, speed: int = 90) -> Optional[str]:
-        _, _, error = self.controller.poll_move_to(target, speed=speed)
-        return error
+    def _current_state_name(self) -> str:
+        """Get the current state name for error reporting."""
+        return f"Running_{self.current_state.__class__.__name__}" if self.current_state else "unknown"
+
+    async def _move_to_and_trigger_next(self, target: Position, speed: int = 90, next_trigger: str = None):
+        """Move to target and trigger next state if specified."""
+        _, _, error = await self.controller.poll_move_to(target, speed=speed)
+        if error:
+            self._update_state(state_name=self._current_state_name(), is_moving=False, error=error)
+            return
+        print(f"Robot moved successfully to {target}")
+        
+        if next_trigger:
+            print(f"Transitioning to {next_trigger}")
+            self.trigger(next_trigger)
 
     @on_state_change
     def on_state_change(self, old_state, new_state, trigger_name):
@@ -96,16 +108,12 @@ class GantryStateMachine(StateMachine):
     def enter_home(self, _):
         print("Entering home state, moving robot to home position")
         self._update_state(state_name="Running_home", is_moving=True)
-        error = self.controller.home()
-        if error and error[2]:
-            self._update_state(state_name="Running_home", is_moving=False, error=error[2])
-            return
-        print("Robot homed successfully")
-
-        # TODO: This is a bit of a hack to automatically transition to the next state after transition completes.
-        # TODO: call this trigger externally from the API after transition is complete instead of automatically transitioning here.
-        # print("Transitioning to moveToCube")
-        # self.trigger(Triggers.to_move_to_cube.name)
+        # Start the movement in a background task
+        asyncio.create_task(self._move_to_and_trigger_next(
+            self.controller._robot.home_position, 
+            speed=50
+            # No next trigger for home - it stays in home state
+        ))
 
     @on_enter_state(States.running.moveToCube)
     def enter_move_to_cube(self, _):
@@ -113,16 +121,12 @@ class GantryStateMachine(StateMachine):
         self._update_state(state_name="Running_moveToCube", is_moving=True)
         cube_pos = self._current_cube_position()
         target = Position(x=cube_pos.x, y=cube_pos.y, z=SAFE_TRAVEL_Z)
-        error = self._move_to(target)
-        if error:
-            self._update_state(state_name="Running_moveToCube", is_moving=False, error=error)
-            return
-        print("Robot moved above cube successfully")
-        
-        # TODO: This is a bit of a hack to automatically transition to the next state after transition completes.
-        # TODO: call this trigger externally from the API after transition is complete instead of automatically transitioning here.
-        print("Transitioning to lowerToPick")
-        self.trigger(Triggers.to_lower_to_pick.name)
+        # Start the movement in a background task
+        asyncio.create_task(self._move_to_and_trigger_next(
+            target, 
+            speed=90, 
+            next_trigger=Triggers.to_lower_to_pick.name
+        ))
 
     @on_enter_state(States.running.lowerToPick)
     def enter_lower_to_pick(self, _):
@@ -131,16 +135,12 @@ class GantryStateMachine(StateMachine):
         cube_pos = self._current_cube_position()
         current = self._current_robot_position()
         target = Position(x=current.x, y=current.y, z=cube_pos.z)
-        error = self._move_to(target)
-        if error:
-            self._update_state(state_name="Running_lowerToPick", is_moving=False, error=error)
-            return
-        print("Robot lowered to cube successfully")
-        
-        # TODO: This is a bit of a hack to automatically transition to the next state after transition completes.
-        # TODO: call this trigger externally from the API after transition is complete instead of automatically transitioning here.
-        print("Transitioning to closeGripper")
-        self.trigger(Triggers.to_close_gripper.name)
+        # Start the movement in a background task
+        asyncio.create_task(self._move_to_and_trigger_next(
+            target, 
+            speed=90, 
+            next_trigger=Triggers.to_close_gripper.name
+        ))
 
     @on_enter_state(States.running.closeGripper)
     def enter_close_gripper(self, _):
@@ -160,16 +160,12 @@ class GantryStateMachine(StateMachine):
         self._update_state(state_name="Running_liftCube", is_moving=True)
         current = self._current_robot_position()
         target = Position(x=current.x, y=current.y, z=SAFE_TRAVEL_Z)
-        error = self._move_to(target)
-        if error:
-            self._update_state(state_name="Running_liftCube", is_moving=False, error=error)
-            return
-        print("Cube lifted successfully")
-        
-        # TODO: This is a bit of a hack to automatically transition to the next state after transition completes.
-        # TODO: call this trigger externally from the API after transition is complete instead of automatically transitioning here.
-        print("Transitioning to moveToDest")
-        self.trigger(Triggers.to_move_to_dest.name)
+        # Start the movement in a background task
+        asyncio.create_task(self._move_to_and_trigger_next(
+            target, 
+            speed=90, 
+            next_trigger=Triggers.to_move_to_dest.name
+        ))
 
     @on_enter_state(States.running.moveToDest)
     def enter_move_to_dest(self, _):
@@ -177,16 +173,12 @@ class GantryStateMachine(StateMachine):
         self._update_state(state_name="Running_moveToDest", is_moving=True)
         dest = self._current_destination_position()
         target = Position(x=dest.x, y=dest.y, z=SAFE_TRAVEL_Z)
-        error = self._move_to(target)
-        if error:
-            self._update_state(state_name="Running_moveToDest", is_moving=False, error=error)
-            return
-        print("Robot moved to destination successfully")
-        
-        # TODO: This is a bit of a hack to automatically transition to the next state after transition completes.
-        # TODO: call this trigger externally from the API after transition is complete instead of automatically transitioning here.
-        print("Transitioning to lowerToPlace")
-        self.trigger(Triggers.to_lower_to_place.name)
+        # Start the movement in a background task
+        asyncio.create_task(self._move_to_and_trigger_next(
+            target, 
+            speed=90, 
+            next_trigger=Triggers.to_lower_to_place.name
+        ))
 
     @on_enter_state(States.running.lowerToPlace)
     def enter_lower_to_place(self, _):
@@ -195,16 +187,12 @@ class GantryStateMachine(StateMachine):
         dest = self._current_destination_position()
         current = self._current_robot_position()
         target = Position(x=dest.x, y=dest.y, z=dest.z)
-        error = self._move_to(target)
-        if error:
-            self._update_state(state_name="Running_lowerToPlace", is_moving=False, error=error)
-            return
-        print("Robot lowered to destination successfully")
-        
-        # TODO: This is a bit of a hack to automatically transition to the next state after transition completes.
-        # TODO: call this trigger externally from the API after transition is complete instead of automatically transitioning here.
-        print("Transitioning to openGripper")
-        self.trigger(Triggers.to_open_gripper.name)
+        # Start the movement in a background task
+        asyncio.create_task(self._move_to_and_trigger_next(
+            target, 
+            speed=90, 
+            next_trigger=Triggers.to_open_gripper.name
+        ))
 
     @on_enter_state(States.running.openGripper)
     def enter_open_gripper(self, _):
@@ -224,16 +212,12 @@ class GantryStateMachine(StateMachine):
         self._update_state(state_name="Running_liftFromPlace", is_moving=True)
         dest = self._current_destination_position()
         target = Position(x=dest.x, y=dest.y, z=SAFE_TRAVEL_Z)
-        error = self._move_to(target)
-        if error:
-            self._update_state(state_name="Running_liftFromPlace", is_moving=False, error=error)
-            return
-        print("Cube lifted from destination successfully")
-        
-        # TODO: This is a bit of a hack to automatically transition to the next state after transition completes.
-        # TODO: call this trigger externally from the API after transition is complete instead of automatically transitioning here.
-        print("Transitioning to complete")
-        self.trigger(Triggers.to_complete.name)
+        # Start the movement in a background task
+        asyncio.create_task(self._move_to_and_trigger_next(
+            target, 
+            speed=90, 
+            next_trigger=Triggers.to_complete.name
+        ))
 
     @on_enter_state(States.running.complete)
     def enter_complete(self, _):

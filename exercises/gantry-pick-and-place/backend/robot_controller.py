@@ -5,6 +5,7 @@ This module adapts the low-level simulator interface in robot_sim.py into a back
 controller that updates shared runtime state and exposes higher-level actions.
 """
 
+import asyncio
 import time
 from threading import Lock
 from typing import Optional, Sequence, Union
@@ -66,7 +67,7 @@ class RobotController:
     def get_runtime_state(self):
         return runtime_state.get_state()
 
-    def poll_move_to(
+    async def poll_move_to(
         self,
         target_position: PositionInput,
         speed: int = 90,
@@ -82,12 +83,12 @@ class RobotController:
                     return self._to_position(position), axis_speed, error
                 if axis_speed == [0, 0, 0]:
                     break
-                time.sleep(poll_interval)
+                await asyncio.sleep(poll_interval)
 
             return self._to_position(self._robot.current_position), axis_speed, None
 
-    def home(self, speed: int = 50) -> tuple[Position, list[float], Optional[str]]:
-        return self.poll_move_to(self._robot.home_position, speed=speed)
+    async def home(self, speed: int = 50) -> tuple[Position, list[float], Optional[str]]:
+        return await self.poll_move_to(self._robot.home_position, speed=speed)
 
     def set_home_position(self, value: PositionInput) -> Position:
         position = self._to_position(value)
