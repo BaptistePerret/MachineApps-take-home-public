@@ -115,7 +115,7 @@ async def get_destination_position() -> Position:
 # Streams
 # ============================================================================
 
-@stream(name="status", payload=StatusResponse, replay=True, queue_maxsize=1, policy="latest")
+@stream(name="status", payload=StatusResponse, replay=False, queue_maxsize=100, policy="fifo")
 async def status_stream() -> StatusResponse:
     """Stream live status updates."""
     print("Emitting status update")
@@ -124,7 +124,7 @@ async def status_stream() -> StatusResponse:
 async def loop():
     while True:
         asyncio.create_task(status_stream())
-        await asyncio.sleep(0.05)  # Update every 50ms for smooth live updates
+        await asyncio.sleep(0.1)  # Update every 100 ms for smooth live updates
 # ============================================================================
 # Startup / Shutdown
 # ============================================================================
