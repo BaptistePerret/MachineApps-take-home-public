@@ -35,17 +35,21 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
   };
 
   const handleCubePositionChange = (axis: keyof Position, value: string) => {
-    setCubePositionText(prev => ({
-      ...prev,
-      [axis]: value,
-    }));
+    if (Number(value) >= -1000 && Number(value) <= 1000) {
+      setCubePositionText(prev => ({
+        ...prev,
+        [axis]: value,
+      }));
+    }
   };
 
   const handleDestPositionChange = (axis: keyof Position, value: string) => {
-    setDestPositionText(prev => ({
-      ...prev,
-      [axis]: value,
-    }));
+    if (Number(value) >= -1000 && Number(value) <= 1000) {
+      setDestPositionText(prev => ({
+        ...prev,
+        [axis]: value,
+      }));
+    }
   };
 
   const handleSetCubePosition = async () => {
@@ -101,7 +105,6 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
             <label>X</label>
             <input
               type="number"
-              min={-999}
               value={cubePositionText.x}
               onChange={e => handleCubePositionChange('x', e.target.value)}
               step="10"
@@ -111,7 +114,6 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
             <label>Y</label>
             <input
               type="number"
-              min={-999}
               value={cubePositionText.y}
               onChange={e => handleCubePositionChange('y', e.target.value)}
               step="10"
@@ -121,7 +123,6 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
             <label>Z</label>
             <input
               type="number"
-              min={-999}
               value={cubePositionText.z}
               onChange={e => handleCubePositionChange('z', e.target.value)}
               step="10"
@@ -144,7 +145,6 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
             <label>X</label>
             <input
               type="number"
-              min={-999}
               value={destPositionText.x}
               onChange={e => handleDestPositionChange('x', e.target.value)}
               step="10"
@@ -154,7 +154,6 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
             <label>Y</label>
             <input
               type="number"
-              min={-999}
               value={destPositionText.y}
               onChange={e => handleDestPositionChange('y', e.target.value)}
               step="10"
@@ -164,7 +163,6 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
             <label>Z</label>
             <input
               type="number"
-              min={-999}
               value={destPositionText.z}
               onChange={e => handleDestPositionChange('z', e.target.value)}
               step="10"
