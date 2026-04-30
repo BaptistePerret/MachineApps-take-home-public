@@ -96,7 +96,7 @@ function App() {
             />
           </section>
 
-          <section className="dashboard-section full-width">
+          <section className="dashboard-section">
             <PositionConfigurationForm
               status={status}
               onPositionUpdate={handleCommandExecuted}

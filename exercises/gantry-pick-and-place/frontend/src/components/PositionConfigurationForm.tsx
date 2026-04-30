@@ -9,37 +9,53 @@ interface Props {
 }
 
 export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionUpdate }) => {
-  const [cubePosition, setCubePosition] = useState<Position>({ x: 0, y: 0, z: 0 });
-  const [destPosition, setDestPosition] = useState<Position>({ x: 0, y: 0, z: 0 });
+  const [cubePositionText, setCubePositionText] = useState<Record<keyof Position, string>>({ x: '0', y: '0', z: '0' });
+  const [destPositionText, setDestPositionText] = useState<Record<keyof Position, string>>({ x: '0', y: '0', z: '0' });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Initialize form values only once on component mount
   useEffect(() => {
     if (status) {
-      setCubePosition(status.cube_start_position);
-      setDestPosition(status.destination_position);
+      setCubePositionText({
+        x: String(status.cube_start_position.x),
+        y: String(status.cube_start_position.y),
+        z: String(status.cube_start_position.z),
+      });
+      setDestPositionText({
+        x: String(status.destination_position.x),
+        y: String(status.destination_position.y),
+        z: String(status.destination_position.z),
+      });
     }
-  }, []); // Empty dependency array - only run once on mount
+  }, []);
+
+  const parsePositionValue = (value: string): number => {
+    const parsed = parseFloat(value);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  };
 
   const handleCubePositionChange = (axis: keyof Position, value: string) => {
-    setCubePosition(prev => ({
+    setCubePositionText(prev => ({
       ...prev,
-      [axis]: parseFloat(value) || 0,
+      [axis]: value,
     }));
   };
 
   const handleDestPositionChange = (axis: keyof Position, value: string) => {
-    setDestPosition(prev => ({
+    setDestPositionText(prev => ({
       ...prev,
-      [axis]: parseFloat(value) || 0,
+      [axis]: value,
     }));
   };
 
   const handleSetCubePosition = async () => {
     setLoading(true);
     try {
-      await api.setCubePosition(cubePosition);
+      await api.setCubePosition({
+        x: parsePositionValue(cubePositionText.x),
+        y: parsePositionValue(cubePositionText.y),
+        z: parsePositionValue(cubePositionText.z),
+      });
       setMessage({ type: 'success', text: 'Cube position updated successfully' });
       onPositionUpdate();
       setTimeout(() => setMessage(null), 3000);
@@ -53,7 +69,11 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
   const handleSetDestPosition = async () => {
     setLoading(true);
     try {
-      await api.setDestinationPosition(destPosition);
+      await api.setDestinationPosition({
+        x: parsePositionValue(destPositionText.x),
+        y: parsePositionValue(destPositionText.y),
+        z: parsePositionValue(destPositionText.z),
+      });
       setMessage({ type: 'success', text: 'Destination position updated successfully' });
       onPositionUpdate();
       setTimeout(() => setMessage(null), 3000);
@@ -81,7 +101,8 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
             <label>X</label>
             <input
               type="number"
-              value={cubePosition.x}
+              min={-999}
+              value={cubePositionText.x}
               onChange={e => handleCubePositionChange('x', e.target.value)}
               step="10"
             />
@@ -90,7 +111,8 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
             <label>Y</label>
             <input
               type="number"
-              value={cubePosition.y}
+              min={-999}
+              value={cubePositionText.y}
               onChange={e => handleCubePositionChange('y', e.target.value)}
               step="10"
             />
@@ -99,7 +121,8 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
             <label>Z</label>
             <input
               type="number"
-              value={cubePosition.z}
+              min={-999}
+              value={cubePositionText.z}
               onChange={e => handleCubePositionChange('z', e.target.value)}
               step="10"
             />
@@ -121,7 +144,8 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
             <label>X</label>
             <input
               type="number"
-              value={destPosition.x}
+              min={-999}
+              value={destPositionText.x}
               onChange={e => handleDestPositionChange('x', e.target.value)}
               step="10"
             />
@@ -130,7 +154,8 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
             <label>Y</label>
             <input
               type="number"
-              value={destPosition.y}
+              min={-999}
+              value={destPositionText.y}
               onChange={e => handleDestPositionChange('y', e.target.value)}
               step="10"
             />
@@ -139,7 +164,8 @@ export const PositionConfigurationForm: React.FC<Props> = ({ status, onPositionU
             <label>Z</label>
             <input
               type="number"
-              value={destPosition.z}
+              min={-999}
+              value={destPositionText.z}
               onChange={e => handleDestPositionChange('z', e.target.value)}
               step="10"
             />

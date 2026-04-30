@@ -6,7 +6,6 @@ controller that updates shared runtime state and exposes higher-level actions.
 """
 
 import asyncio
-import time
 from threading import Lock
 from typing import Optional, Sequence, Union
 
@@ -62,7 +61,6 @@ class RobotController:
             is_moving=any(abs(v) > 0 for v in self._robot.axis_speed),
             error=error,
         )
-        print(f"Robot position: x={robot_pos.x:.2f}, y={robot_pos.y:.2f}, z={robot_pos.z:.2f}")
 
     def get_runtime_state(self):
         return runtime_state.get_state()

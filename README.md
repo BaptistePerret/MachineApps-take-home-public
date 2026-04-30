@@ -4,6 +4,8 @@
 
 This repository contains a proof-of-concept gantry robot pick-and-place simulation with a Python backend and a React frontend. The application is designed to control a simulated 3-axis gantry robot using a state machine, expose a live telemetry stream, and allow the user to configure cube and destination positions.
 
+> Due to a constrained professional and personal schedule, this implementation reflects approximately 8 hours of focused development effort.
+
 ---
 
 ## Setup and Run Instructions

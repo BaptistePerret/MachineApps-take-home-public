@@ -148,11 +148,13 @@ class GantryStateMachine(StateMachine):
         self._update_state(state_name="Running_closeGripper", is_moving=False)
         self.controller.close_gripper()
         print("Gripper closed successfully")
-        
         # TODO: This is a bit of a hack to automatically transition to the next state after transition completes.
         # TODO: call this trigger externally from the API after transition is complete instead of automatically transitioning here.
-        print("Transitioning to liftCube")
-        self.trigger(Triggers.to_lift_cube.name)
+        asyncio.create_task(self._move_to_and_trigger_next(
+            self._current_robot_position(), 
+            speed=90, 
+            next_trigger=Triggers.to_lift_cube.name
+        ))
 
     @on_enter_state(States.running.liftCube)
     def enter_lift_cube(self, _):
@@ -203,8 +205,11 @@ class GantryStateMachine(StateMachine):
         
         # TODO: This is a bit of a hack to automatically transition to the next state after transition completes.
         # TODO: call this trigger externally from the API after transition is complete instead of automatically transitioning here.
-        print("Transitioning to liftFromPlace")
-        self.trigger(Triggers.to_lift_from_place.name)
+        asyncio.create_task(self._move_to_and_trigger_next(
+            self._current_robot_position(), 
+            speed=90, 
+            next_trigger=Triggers.to_lift_from_place.name
+        ))
 
     @on_enter_state(States.running.liftFromPlace)
     def enter_lift_from_place(self, _):

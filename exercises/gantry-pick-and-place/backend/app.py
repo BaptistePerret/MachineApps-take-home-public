@@ -118,7 +118,6 @@ async def get_destination_position() -> Position:
 @stream(name="status", payload=StatusResponse, replay=False, queue_maxsize=100, policy="fifo")
 async def status_stream() -> StatusResponse:
     """Stream live status updates."""
-    print("Emitting status update")
     return _runtime_to_status()
 
 async def loop():

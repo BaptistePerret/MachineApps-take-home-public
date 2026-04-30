@@ -47,7 +47,7 @@
 
 .position-inputs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 12px;
 }
@@ -65,7 +65,9 @@
 }
 
 .input-group input {
-  padding: 8px 12px;
+  width: 100%;
+  max-width: 100px;
+  padding: 8px 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;

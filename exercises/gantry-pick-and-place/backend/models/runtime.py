@@ -51,7 +51,6 @@ class SharedRuntimeState:
         with self._lock:
             self.state = self.state.model_copy(update=kwargs)
             updated_state = self.state.model_copy(deep=True)
-            #print("runtime_state updated:", updated_state.model_dump_json())
             return updated_state
 
 
