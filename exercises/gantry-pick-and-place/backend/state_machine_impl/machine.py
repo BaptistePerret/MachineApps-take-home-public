@@ -120,7 +120,7 @@ class GantryStateMachine(StateMachine):
         print("Entering moveToCube state, moving robot above cube start position")
         self._update_state(state_name="Running_moveToCube", is_moving=True)
         cube_pos = self._current_cube_position()
-        target = Position(x=cube_pos.x, y=cube_pos.y, z=SAFE_TRAVEL_Z)
+        target = Position(x=cube_pos.x, y=cube_pos.y, z=cube_pos.z + SAFE_TRAVEL_Z)
         # Start the movement in a background task
         asyncio.create_task(self._move_to_and_trigger_next(
             target, 
@@ -161,7 +161,7 @@ class GantryStateMachine(StateMachine):
         print("Entering liftCube state, lifting cube up to safe travel height")
         self._update_state(state_name="Running_liftCube", is_moving=True)
         current = self._current_robot_position()
-        target = Position(x=current.x, y=current.y, z=SAFE_TRAVEL_Z)
+        target = Position(x=current.x, y=current.y, z=current.z + SAFE_TRAVEL_Z)
         # Start the movement in a background task
         asyncio.create_task(self._move_to_and_trigger_next(
             target, 
@@ -174,7 +174,7 @@ class GantryStateMachine(StateMachine):
         print("Entering moveToDest state, moving robot to destination position")
         self._update_state(state_name="Running_moveToDest", is_moving=True)
         dest = self._current_destination_position()
-        target = Position(x=dest.x, y=dest.y, z=SAFE_TRAVEL_Z)
+        target = Position(x=dest.x, y=dest.y, z=dest.z + SAFE_TRAVEL_Z)
         # Start the movement in a background task
         asyncio.create_task(self._move_to_and_trigger_next(
             target, 
@@ -216,7 +216,7 @@ class GantryStateMachine(StateMachine):
         print("Entering liftFromPlace state, lifting cube from destination position")
         self._update_state(state_name="Running_liftFromPlace", is_moving=True)
         dest = self._current_destination_position()
-        target = Position(x=dest.x, y=dest.y, z=SAFE_TRAVEL_Z)
+        target = Position(x=dest.x, y=dest.y, z=dest.z + SAFE_TRAVEL_Z)
         # Start the movement in a background task
         asyncio.create_task(self._move_to_and_trigger_next(
             target, 
